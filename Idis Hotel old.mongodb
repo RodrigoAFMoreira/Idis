@@ -1,0 +1,202 @@
+use('somativa1')
+
+db.hotel.drop();
+db.quarto.drop();
+db.cliente.drop();
+db.reserva.drop();
+db.funcionario.drop();
+// sede hotel só terá seus valores
+
+db.createCollection('hotel',{
+    validator:{
+        $jsonSchema:{
+            bsonType:"object",
+            title:"sedeHotel",
+            required:["sedeHotel"],
+            properties:{
+            sedeHotel:{
+                    bsonType:"string",
+                    description:"a sede do hotel deve ser um string e obrigatorio"
+              },
+              quartos: {
+                bsonType: [ "array" ],
+                items: {
+                    bsonType:"object",
+                    title:"quarto",
+                    required:["numero","tipo"],
+                    properties:{
+                      numero:{
+                        bsonType:"int",
+                        description:"o numero e numero inteiro e obrigatorio"
+                      },
+                      tipo:{
+                        bsonType:"string",
+                        description:"o tipo do quarto e obrigatorio"
+                      },
+                      valor:{
+                        bsonType:"int",
+                        description:"o valor do quarto e int"
+                      },
+                      necessidadesEspeciais:{
+                        bsonType:"bool",
+                        description:"as necessidades especiais sao true ou false"
+                      }
+                    }
+                },
+                description: "quartos deve ser um array de objetos"
+              }
+        }
+    }
+  }
+});
+
+db.hotel.insertMany([
+            {_id: 1, "sedeHotel": "centro", quartos: [
+              {"numero":155,"tipo":"solteiro","valor":200,"necessidadesEspeciais":true},
+              {"numero":156,"tipo":"casal","valor":300,"necessidadesEspeciais":false},
+              {"numero":157,"tipo":"familha","valor":350,"necessidadesEspeciais":false},
+              {"numero":158,"tipo":"presidencial","valor":500,"necessidadesEspeciais":false},
+              {"numero":159,"tipo":"casal","valor":300,"necessidadesEspeciais":false}
+            ]},
+            {_id: 2, "sedeHotel": "ahu", quartos:[
+              {"numero":105,"tipo":"casal","valor":300,"necessidadesEspeciais":true},
+              {"numero":106,"tipo":"casal","valor":300,"necessidadesEspeciais":false},
+              {"numero":107,"tipo":"familha","valor":350,"necessidadesEspeciais":false},
+              {"numero":108,"tipo":"presidencial","valor":500,"necessidadesEspeciais":false},
+              {"numero":109,"tipo":"casal","valor":300,"necessidadesEspeciais":false}
+              ]},
+            {_id: 3, "sedeHotel": "batel",quartos:[
+              {"numero":105,"tipo":"solteiro","valor":200,"necessidadesEspeciais":true},
+              {"numero":106,"tipo":"casal","valor":300,"necessidadesEspeciais":false},
+              {"numero":107,"tipo":"familha","valor":350,"necessidadesEspeciais":false},
+              {"numero":108,"tipo":"presidencial","valor":500,"necessidadesEspeciais":false},
+              {"numero":109,"tipo":"casal","valor":300,"necessidadesEspeciais":false}
+              ]},
+            {_id: 4, "sedeHotel": "agua verde", quartos:[
+              {"numero":50,"tipo":"solteiro","valor":200,"necessidadesEspeciais":true},
+              {"numero":60,"tipo":"casal","valor":300,"necessidadesEspeciais":false},
+              {"numero":70,"tipo":"casal","valor":300,"necessidadesEspeciais":false},
+              {"numero":90,"tipo":"presidencial","valor":500,"necessidadesEspeciais":false},
+              {"numero":127,"tipo":"casal","valor":300,"necessidadesEspeciais":false}
+              ]},
+            {_id: 5, "sedeHotel": "xaxim", quartos:[
+              {"numero":10,"tipo":"solteiro","valor":200,"necessidadesEspeciais":true},
+              {"numero":16,"tipo":"casal","valor":300,"necessidadesEspeciais":false},
+              {"numero":77,"tipo":"familha","valor":350,"necessidadesEspeciais":false},
+              {"numero":69,"tipo":"presidencial","valor":500,"necessidadesEspeciais":false},
+              {"numero":149,"tipo":"casal","valor":300,"necessidadesEspeciais":false}
+              ]},
+						]);
+
+//cliente so terá seus valores
+//precisa de id para poder fazer varias reservas com mesmo id
+
+db.createCollection('cliente',{
+    validator:{
+        $jsonSchema:{
+            bsonType:"object",
+            title:"cliente",
+            required:["id","nome","email","telefone"],
+            properties:{
+            id:{
+                    bsonType:"int",
+                    description:"o id e int e obrigatorio"
+            },
+            nome:{
+                    bsonType:"string",
+                    description:"o nome e string e obrigatorio"
+            },
+            email:{
+                    bsonType:"string",
+                    description:"o e-mail e string e obrigatorio"
+            },
+            telefone:{
+                    bsonType:"string",
+                    description:"o telefone e string e obrigatorio"
+            },
+            endereco:{
+                    bsonType:"string",
+                    description:"o endereco e string"
+            },
+            nacionalidade:{
+                    bsonType:"string",
+                    description:"a nacionalidade e string"
+            }
+             
+              }
+        }
+    }
+});
+
+db.cliente.insertMany([
+            {"id": 1, "nome":"Bolsonaro","email":"bolso@gmail.com","telefone":"20022222","endereco":"brasilia","nacionalidade":"BR"},
+						{"id": 2, "nome":"Lula","email":"lula@gmail.com","telefone":"30033333","endereco":"brasilia","nacionalidade":"BR"},
+            {"id": 3, "nome":"Ciro","email":"cir@gmail.com","telefone":"35055555","endereco":"brasilia","nacionalidade":"BR"},
+            {"id": 4, "nome":"Kelman","email":"kel@gmail.com","telefone":"50000000","endereco":"brasilia","nacionalidade":"BR"},
+            {"id": 5, "nome":"Simone","email":"sim@gmail.com","telefone":"30033333","endereco":"brasilia","nacionalidade":"BR"}
+						]);
+
+// reserva vai ter dados sedeHotel, quarto e cliente
+// cancelarUmDiaAntes é para modificar ou cancelar a reserva(s) com até 24 horas antes do dia da dataIni 
+
+db.createCollection('reserva',{
+    validator:{
+        $jsonSchema:{
+            bsonType:"object",
+            title:"reserva",
+            required:["dataIni","dataFin","checkIn","cancelarUmDiaAntes"],
+            properties:{
+            dataIni:{
+                    bsonType:"date",
+                    description:"a data de inicio da reserva deve ser um date e string e obrigatorio"
+            },
+            dataFin:{
+                    bsonType:"date",
+                    description:"a data de final da reserva deve ser um date e string e obrigatorio"
+            },
+            checkIn:{
+                    bsonType:"bool",
+                    description:"a data de final da reserva deve ser um date e string e obrigatorio"
+            },
+            cancelarUmDiaAntes:{
+                    bsonType:"bool",
+                    description:"o status de cancelarUmDiaAntes e bool"
+            }
+             
+              }
+        }
+    }
+});
+
+db.reserva.insertMany([
+    {"dataIni": new ISODate('2022-10-12T12:00:00Z'), "dataFin": new ISODate('2022-10-16T12:00:00Z'), "checkIn": false, "cancelarUmDiaAntes":false},
+    {"dataIni": new ISODate('2022-10-22T12:00:00Z'), "dataFin": new ISODate('2022-11-02T12:00:00Z'), "checkIn": false, "cancelarUmDiaAntes":false},
+    {"dataIni": new ISODate('2022-11-10T12:00:00Z'), "dataFin": new ISODate('2022-11-21T12:00:00Z'), "checkIn": true, "cancelarUmDiaAntes":false},
+    {"dataIni": new ISODate('2022-11-05T12:00:00Z'), "dataFin": new ISODate('2022-11-25T12:00:00Z'), "checkIn": true, "cancelarUmDiaAntes":false},
+    {"dataIni": new ISODate('2022-12-22T12:00:00Z'), "dataFin": new ISODate('2023-01-03T12:00:00Z'), "checkIn": true, "cancelarUmDiaAntes":false}
+]);
+
+// vai ter dados sedeHotel (sedeHotel) e reserva (realizadaPorFuncionario)
+db.createCollection('funcionario',{
+    validator:{
+        $jsonSchema:{
+            bsonType:"object",
+            title:"funcionario",
+            required:["tipoFun"],
+            properties:{
+            tipoFun:{
+                    bsonType:"string",
+                    description:"tipo do funcionário e string e obrigatorio"
+              }
+              }
+        }
+    }
+});
+
+db.funcionario.insertMany([
+            {"tipoFun":"atendente"},
+						{"tipoFun":"gerente"},
+            {"tipoFun":"limpeza"},
+            {"tipoFun":"lavanderia"},
+            {"tipoFun":"cozinha"},
+						]);

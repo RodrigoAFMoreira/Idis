@@ -1,0 +1,213 @@
+use('somativa1')
+
+db.hotel.drop();
+db.quarto.drop();
+db.cliente.drop();
+db.reserva.drop();
+db.funcionario.drop();
+// sede hotel só terá seus valores
+
+db.createCollection('hotel',{
+    validator:{
+        $jsonSchema:{
+            bsonType:"object",
+            title:"sedeHotel",
+            required:["sedeHotel"],
+            properties:{
+            sedeHotel:{
+                    bsonType:"string",
+                    description:"a sede do hotel deve ser um string e obrigatorio"
+              },
+              quartos: {
+                bsonType: [ "array" ],
+                items: {
+                    bsonType:"object",
+                    title:"quarto",
+                    required:["numero","tipo"],
+                    properties:{
+                      numero:{
+                        bsonType:"int",
+                        description:"o numero e numero inteiro e obrigatorio"
+                      },
+                      tipo:{
+                        bsonType:"string",
+                        description:"o tipo do quarto e obrigatorio"
+                      },
+                      valor:{
+                        bsonType:"int",
+                        description:"o valor do quarto e int"
+                      },
+                      necessidadesEspeciais:{
+                        bsonType:"bool",
+                        description:"as necessidades especiais sao true ou false"
+                      }
+                    }
+                },
+                description: "quartos deve ser um array de objetos"
+              }
+        }
+    }
+  }
+});
+
+db.hotel.insertMany([
+            {_id: 1, "sedeHotel": "centro"},
+            {_id: 2, "sedeHotel": "ahu"},
+            {_id: 3, "sedeHotel": "batel"},
+            {_id: 4, "sedeHotel": "agua verde"},
+            {_id: 5, "sedeHotel": "xaxim"},
+						]);
+
+db.createCollection('quarto', {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            title: "quarto",
+            required: ["numero", "tipo"],
+            properties: {
+                numero: {
+                    bsonType: "int",
+                    description: "O número é inteiro e obrigatório"
+                },
+                tipo: {
+                    bsonType: "string",
+                    description: "O tipo do quarto é obrigatório"
+                },
+                valor: {
+                    bsonType: "int",
+                    description: "O valor do quarto é int"
+                },
+                necessidadesEspeciais: {
+                    bsonType: "bool",
+                    description: "As necessidades especiais são verdadeiro ou falso"
+                }
+            }
+        }
+    }
+});
+
+db.quarto.insertMany([
+    {"numero": 155, "tipo": "solteiro", "valor": 200, "necessidadesEspeciais": true, hotel_id: 1},
+    {"numero": 156, "tipo": "casal", "valor": 300, "necessidadesEspeciais": false, hotel_id: 1},
+    {"numero": 157, "tipo": "familia", "valor": 350, "necessidadesEspeciais": false, hotel_id: 1},
+    {"numero": 158, "tipo": "presidencial", "valor": 500, "necessidadesEspeciais": false, hotel_id: 1},
+    {"numero": 159, "tipo": "casal", "valor": 300, "necessidadesEspeciais": false, hotel_id: 1},
+]);
+
+//cliente so terá seus valores
+//precisa de id para poder fazer varias reservas com mesmo id
+
+db.createCollection('cliente',{
+    validator:{
+        $jsonSchema:{
+            bsonType:"object",
+            title:"cliente",
+            required:["id","nome","email","telefone"],
+            properties:{
+            id:{
+                    bsonType:"int",
+                    description:"o id e int e obrigatorio"
+            },
+            nome:{
+                    bsonType:"string",
+                    description:"o nome e string e obrigatorio"
+            },
+            email:{
+                    bsonType:"string",
+                    description:"o e-mail e string e obrigatorio"
+            },
+            telefone:{
+                    bsonType:"string",
+                    description:"o telefone e string e obrigatorio"
+            },
+            endereco:{
+                    bsonType:"string",
+                    description:"o endereco e string"
+            },
+            nacionalidade:{
+                    bsonType:"string",
+                    description:"a nacionalidade e string"
+            }
+             
+              }
+        }
+    }
+});
+
+db.cliente.insertMany([
+            {"id": 1, "nome":"Bolsonaro","email":"bolso@gmail.com","telefone":"20022222","endereco":"brasilia","nacionalidade":"BR"},
+						{"id": 2, "nome":"Lula","email":"lula@gmail.com","telefone":"30033333","endereco":"brasilia","nacionalidade":"BR"},
+            {"id": 3, "nome":"Ciro","email":"cir@gmail.com","telefone":"35055555","endereco":"brasilia","nacionalidade":"BR"},
+            {"id": 4, "nome":"Kelman","email":"kel@gmail.com","telefone":"50000000","endereco":"brasilia","nacionalidade":"BR"},
+            {"id": 5, "nome":"Simone","email":"sim@gmail.com","telefone":"30033333","endereco":"brasilia","nacionalidade":"BR"}
+						]);
+
+// reserva vai ter dados sedeHotel, quarto e cliente
+// cancelarUmDiaAntes é para modificar ou cancelar a reserva(s) com até 24 horas antes do dia da dataIni 
+
+db.createCollection('reserva',{
+    validator:{
+        $jsonSchema:{
+            bsonType:"object",
+            title:"reserva",
+            required:["dataIni","dataFin","checkIn","cancelarUmDiaAntes"],
+            properties:{
+            dataIni:{
+                    bsonType:"date",
+                    description:"a data de inicio da reserva deve ser um date e string e obrigatorio"
+            },
+            dataFin:{
+                    bsonType:"date",
+                    description:"a data de final da reserva deve ser um date e string e obrigatorio"
+            },
+            checkIn:{
+                    bsonType:"bool",
+                    description:"a data de final da reserva deve ser um date e string e obrigatorio"
+            },
+            cancelarUmDiaAntes:{
+                    bsonType:"bool",
+                    description:"o status de cancelarUmDiaAntes e bool"
+            }
+             
+              }
+        }
+    }
+});
+
+db.reserva.insertMany([
+    {"dataIni": new ISODate('2022-10-12T12:00:00Z'), "dataFin": new ISODate('2022-10-16T12:00:00Z'), "checkIn": true, "cancelarUmDiaAntes":false, quarto_id: 1},
+    {"dataIni": new ISODate('2022-10-22T12:00:00Z'), "dataFin": new ISODate('2022-11-02T12:00:00Z'), "checkIn": true, "cancelarUmDiaAntes":false, quarto_id: 3},
+    {"dataIni": new ISODate('2022-11-10T12:00:00Z'), "dataFin": new ISODate('2022-11-21T12:00:00Z'), "checkIn": true, "cancelarUmDiaAntes":false, quarto_id: 2},
+    {"dataIni": new ISODate('2022-11-05T12:00:00Z'), "dataFin": new ISODate('2022-11-25T12:00:00Z'), "checkIn": false, "cancelarUmDiaAntes":false, quarto_id: 4},
+    {"dataIni": new ISODate('2022-12-24T12:00:00Z'), "dataFin": new ISODate('2023-01-05T12:00:00Z'), "checkIn": false, "cancelarUmDiaAntes":false, quarto_id: 1},
+    {"dataIni": new ISODate('2022-12-24T12:00:00Z'), "dataFin": new ISODate('2023-01-05T12:00:00Z'), "checkIn": false, "cancelarUmDiaAntes":false, quarto_id: 2}
+]);
+
+//24/12/2022 e 05/01/2023
+
+db.reserva.find({$gte:ISODate("2022-12-24"),$lt:ISODate("2023-01-05"})
+
+// vai ter dados sedeHotel (sedeHotel) e reserva (realizadaPorFuncionario)
+db.createCollection('funcionario',{
+    validator:{
+        $jsonSchema:{
+            bsonType:"object",
+            title:"funcionario",
+            required:["tipoFun"],
+            properties:{
+            tipoFun:{
+                    bsonType:"string",
+                    description:"tipo do funcionário e string e obrigatorio"
+              }
+              }
+        }
+    }
+});
+
+db.funcionario.insertMany([
+            {"tipoFun":"atendente"},
+						{"tipoFun":"gerente"},
+            {"tipoFun":"limpeza"},
+            {"tipoFun":"lavanderia"},
+            {"tipoFun":"cozinha"},
+						]);
