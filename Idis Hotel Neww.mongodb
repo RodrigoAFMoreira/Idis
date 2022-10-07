@@ -1,0 +1,387 @@
+use('somativa1')
+
+db.hotel.drop();
+db.quarto.drop();
+db.cliente.drop();
+db.reserva.drop();
+db.funcionario.drop();
+
+/*
+Validadores da collection Hotel:
+- sedeHotel:
+  - string, pois é o endereço da sede
+  - required, pois é obrigatória a informação desse campo
+*/
+db.createCollection('hotel', {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            title: "Hotel",
+            required: ["sedeHotel"],
+            properties: {
+                sedeHotel: {
+                    bsonType: "string",
+                    description: "A sede do hotel é obrigatória e deve ser uma string"
+                }
+            }
+        }
+    }
+});
+
+db.hotel.insertMany([
+    {_id: 1, "sedeHotel": "centro"},
+    {_id: 2, "sedeHotel": "ahu"},
+    {_id: 3, "sedeHotel": "batel"},
+    {_id: 4, "sedeHotel": "agua verde"},
+    {_id: 5, "sedeHotel": "xaxim"},
+]);
+
+/*
+Validadores da collection Quarto:
+- numero:
+  - int, pois representa o número do quarto, sendo assim um inteiro
+  - required, pois é obrigatória a informação desse campo
+- tipo:
+  - string, pois representa o tipo do quarto
+  - required, pois é obrigatória a informação desse campo
+- valor:
+  - int, pois representa valor do quarto
+- necessidadesEspeciais:
+  - bool, pois representa se o quarto possui, ou não, necessidades especiais
+*/
+db.createCollection('quarto', {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            title: "Quarto",
+            required: ["numero", "tipo"],
+            properties: {
+                numero: {
+                    bsonType: "int",
+                    description: "O número é obrigatório e deve ser inteiro"
+                },
+                tipo: {
+                    bsonType: "string",
+                    description: "O tipo do quarto é obrigatório e deve ser uma string"
+                },
+                valor: {
+                    bsonType: "int",
+                    description: "O valor do quarto é inteiro"
+                },
+                necessidadesEspeciais: {
+                    bsonType: "bool",
+                    description: "As necessidades especiais são verdadeiro ou falso"
+                }
+            }
+        }
+    }
+});
+
+db.quarto.insertMany([{
+        "id": 1,
+        "numero": 155,
+        "tipo": "solteiro",
+        "valor": 200,
+        "necessidadesEspeciais": true,
+        hotel_id: 1
+    },
+    {
+        "id": 2,
+        "numero": 156,
+        "tipo": "casal",
+        "valor": 300,
+        "necessidadesEspeciais": false,
+        hotel_id: 1
+    },
+    {
+        "id": 3,
+        "numero": 157,
+        "tipo": "familia",
+        "valor": 350,
+        "necessidadesEspeciais": false,
+        hotel_id: 1
+    },
+    {
+        "id": 4,
+        "numero": 158,
+        "tipo": "presidencial",
+        "valor": 500,
+        "necessidadesEspeciais": false,
+        hotel_id: 1
+    },
+    {
+        "id": 5,
+        "numero": 159,
+        "tipo": "casal",
+        "valor": 400,
+        "necessidadesEspeciais": false,
+        hotel_id: 1
+    },
+]);
+
+/*
+Validadores da collection Cliente:
+- id:
+  - int, pois representa o identificador do cliente, sendo assim um inteiro
+  - required, pois é um indificador do cliente que pode ser repetido, permitindo várias reservas provindas dos mesmo cliente 
+- nome:
+  - string, pois representa o nome do cliente
+  - required, pois é um dado pessoal e sua informação neste campo é obrigatória
+- email:
+  - string, pois representa o email do cliente
+  - required, pois é um dado pessoal e sua informação neste campo é obrigatória
+- telefone:
+  - string, pois representa o telefone do cliente
+  - required, pois é um dado pessoal e sua informação neste campo é obrigatória
+- endereço:
+  - string, pois representa o endereço do cliente
+- nacionalidade:
+  - string, pois representa a nacionalidade do cliente
+*/
+db.createCollection('cliente', {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            title: "cliente",
+            required: ["id", "nome", "email", "telefone"],
+            properties: {
+                id: {
+                    bsonType: "int",
+                    description: "O ID é obrigatório e deve ser inteiro"
+                },
+                nome: {
+                    bsonType: "string",
+                    description: "O nome é obrigatório e deve ser uma string"
+                },
+                email: {
+                    bsonType: "string",
+                    description: "O e-mail é obrigatório e deve ser uma string"
+                },
+                telefone: {
+                    bsonType: "string",
+                    description: "O telefone é obrigatório e deve ser uma string"
+                },
+                endereco: {
+                    bsonType: "string",
+                    description: "O endereço deve ser uma string"
+                },
+                nacionalidade: {
+                    bsonType: "string",
+                    description: "A nacionalidade deve ser uma string"
+                }
+
+            }
+        }
+    }
+});
+
+db.cliente.insertMany([{
+        "id": 1,
+        "nome": "Bolsonaro",
+        "email": "bolso@gmail.com",
+        "telefone": "20022222",
+        "endereco": "brasilia",
+        "nacionalidade": "BR"
+    },
+    {
+        "id": 2,
+        "nome": "Lula",
+        "email": "lula@gmail.com",
+        "telefone": "30033333",
+        "endereco": "brasilia",
+        "nacionalidade": "BR"
+    },
+    {
+        "id": 3,
+        "nome": "Ciro",
+        "email": "cir@gmail.com",
+        "telefone": "35055555",
+        "endereco": "brasilia",
+        "nacionalidade": "BR"
+    },
+    {
+        "id": 4,
+        "nome": "Kelman",
+        "email": "kel@gmail.com",
+        "telefone": "50000000",
+        "endereco": "brasilia",
+        "nacionalidade": "BR"
+    },
+    {
+        "id": 5,
+        "nome": "Simone",
+        "email": "sim@gmail.com",
+        "telefone": "30033333",
+        "endereco": "brasilia",
+        "nacionalidade": "BR"
+    }
+]);
+
+// reserva vai ter dados sedeHotel, quarto e cliente
+// cancelarUmDiaAntes é para modificar ou cancelar a reserva(s) com até 24 horas antes do dia da dataIni 
+/*
+Validadores da collection Reserva:
+- dataIni:
+  - date, pois representa data inicial da reserva
+  - required, pois representa a data inicial em que o cliente ficará hospedado
+- dataFin:
+  - date, pois representa data final da reserva
+  - required, pois representa a data final em que o cliente deixará de estar hospedado
+- checkIn:
+  - bool, pois representa o check-in do cliente, sendo true para confirmado ou false para pendente
+  - required, pois representa se o cliente fez ou não o check-in, sendo essa informação obrigatória
+- cancelarUmDiaAntes:
+  - bool, pois representa se o cliente decidiu cancelar sua reserva, sendo true para cancelada or false para não cancelada
+  - required, pois representa se o cliente deseja cancelar a reserva, sendo essa informação obrigatória
+*/
+db.createCollection('reserva', {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            title: "reserva",
+            required: ["dataIni", "dataFin", "checkIn", "cancelarUmDiaAntes"],
+            properties: {
+                dataIni: {
+                    bsonType: "date",
+                    description: "A data de inicio da reserva é obrigatória e deve ser uma data"
+                },
+                dataFin: {
+                    bsonType: "date",
+                    description: "A data de final da reserva é obrigatória e deve ser uma data"
+                },
+                checkIn: {
+                    bsonType: "bool",
+                    description: "O check-in é obrigatório e deve ser verdadeiro ou falso"
+                },
+                cancelarUmDiaAntes: {
+                    bsonType: "bool",
+                    description: "O status de cancelarUmDiaAntes é obrigatório e deve ser verdadeiro ou falso"
+                }
+
+            }
+        }
+    }
+});
+
+db.reserva.insertMany([{
+        "dataIni": new Date('2022-10-12'),
+        "dataFin": new Date('2022-10-16'),
+        "checkIn": true,
+        "cancelarUmDiaAntes": false,
+        quarto_id: 1
+    },
+    {
+        "dataIni": new Date('2022-10-22'),
+        "dataFin": new Date('2022-11-02'),
+        "checkIn": true,
+        "cancelarUmDiaAntes": false,
+        quarto_id: 3
+    },
+    {
+        "dataIni": new Date('2022-11-10'),
+        "dataFin": new Date('2022-11-21'),
+        "checkIn": true,
+        "cancelarUmDiaAntes": false,
+        quarto_id: 5
+    },
+    {
+        "dataIni": new Date('2022-11-05'),
+        "dataFin": new Date('2022-11-25'),
+        "checkIn": false,
+        "cancelarUmDiaAntes": false,
+        quarto_id: 4
+    },
+    {
+        "dataIni": new Date('2022-12-24'),
+        "dataFin": new Date('2023-01-05'),
+        "checkIn": false,
+        "cancelarUmDiaAntes": false,
+        quarto_id: 1
+    },
+    {
+        "dataIni": new Date('2022-12-24'),
+        "dataFin": new Date('2023-01-05'),
+        "checkIn": false,
+        "cancelarUmDiaAntes": false,
+        quarto_id: 2
+    }
+]);
+
+
+/*
+Validadores da collection Funcionario:
+- tipoFun:
+  - string, pois representa o tipo do funcionário do hotel
+  - required, pois é obrigatória a informação desse campo
+*/
+db.createCollection('funcionario', {
+    validator: {
+        $jsonSchema: {
+            bsonType: "object",
+            title: "funcionario",
+            required: ["tipoFun"],
+            properties: {
+                tipoFun: {
+                    bsonType: "string",
+                    description: "O tipo do funcionário é obrigatório e deve ser uma string"
+                }
+            }
+        }
+    }
+});
+
+db.funcionario.insertMany([
+    {"tipoFun": "atendente"},
+    {"tipoFun": "gerente"},
+    {"tipoFun": "limpeza"},
+    {"tipoFun": "lavanderia"},
+    {"tipoFun": "cozinha"},
+]);
+
+/* 4.	Crie um filtro para selecionar todos os quartos livres entre o dia 24/12/2022 e 05/01/2023  */
+
+// Filtro dos quartos reservados no período de datas solicitado
+var quartosReservados = db.reserva.find({
+    $and: [{
+            "dataIni": {
+                $gte: ISODate('2022-12-24')
+            }
+        },
+        {
+            "dataFin": {
+                $lte: ISODate('2023-01-05')
+            }
+        },
+    ]
+}, {"quarto_id": 1}).toArray();
+
+// Mapeando o ID dos quartos reservados para o array idQuartosReservados para realizar o filtro
+var idQuartosReservados = [];
+quartosReservados.map(function(data, key) {
+    idQuartosReservados.push(data['quarto_id']);
+});
+
+// Filtro dos quartos não reservados no período de datas solicitado
+db.quarto.find({
+    "id": {
+        $nin: idQuartosReservados
+    }
+});
+
+
+/* 5.	Crie um filtro para somar todo o valor gerado por quartos do tipo casal  */
+
+db.quarto.aggregate({
+    $match: {
+        tipo: {
+            $eq: "casal"
+        },
+    }
+}, {
+    $group: {
+        _id: "tipoCasal",
+        total: {
+            $sum: "$valor"
+        }
+    }
+});
